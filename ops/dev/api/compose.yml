@@ -1,0 +1,39 @@
+volumes:
+  psql_volume: {}
+
+services:
+  api:
+    container_name: container-django
+    image: api:latest
+    command: >
+      bash -c "python minitwitter/manage.py migrate
+      && python minitwitter/manage.py runserver 0.0.0.0:8000"
+    build:
+      context: ../../../
+      dockerfile: ./ops/dev/api/Dockerfile
+    environment:
+      - CONN_MAX_AGE=${CONN_MAX_AGE}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+    volumes:
+      - ../../../api/:/api/
+    depends_on:
+      - psql
+    restart: on-failure
+
+  psql:
+    container_name: container-psql
+    image: docker.io/library/postgres:15.3-alpine
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - psql_volume:/var/lib/postgresql/data/
+    restart: on-failure
