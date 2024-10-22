@@ -7,12 +7,17 @@ API_SERVICE := 'api'
 
 #
 
-up-api:
-    docker compose -f {{API_COMPOSE}} up -d --remove-orphans
-    just logs-api
+build-api:
+	docker build --file {{API_CONTAINER}} --tag api:latest .
 
-down-api:
+up:
+    docker compose -f {{API_COMPOSE}} up -d --remove-orphans
+    just logs
+
+down:
 	docker compose -f {{API_COMPOSE}} down
 
-logs-api:
+restart: down up
+
+logs:
 	docker compose -f {{API_COMPOSE}} logs --follow=true {{API_SERVICE}}
