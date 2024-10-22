@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "minitwitter"
+version = "0.0.1"
+description = ""
+authors = ["Breno Viana <brenomfviana@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.10"
+
+# Django + Django REST
+django = "4.2"
+djangorestframework = "3.13"
+
+# ENV
+python-decouple = "3.4"
+
+# DB
+psycopg2-binary = "2.9.*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
