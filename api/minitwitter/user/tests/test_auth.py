@@ -7,10 +7,12 @@ from user.models import User
 class AuthTestCase(BaseTestCase):
     def setUp(self):
         super().setUp()
-        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.user = User.objects.create_user(
+            username="testuser", password="testpass"
+        )
 
     def test_auth_1(self):
-        url = reverse('token_obtain_pair')
+        url = reverse("token_obtain_pair")
 
         data = {
             "username": "testuser",
@@ -19,4 +21,6 @@ class AuthTestCase(BaseTestCase):
 
         response = self.api.post(path=url, data=data, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK, response.data
+        )
