@@ -1,12 +1,11 @@
-from django.db import models
-from django.contrib.auth.validators import UnicodeUsernameValidator
+from common.models import BaseModel
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    UserManager,
     PermissionsMixin,
+    UserManager,
 )
-
-from common.models import BaseModel
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.db import models
 
 
 class User(AbstractBaseUser, PermissionsMixin, BaseModel):
