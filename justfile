@@ -24,3 +24,7 @@ logs:
 
 test:
     docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python minitwitter/manage.py test --noinput ./minitwitter
+
+fmt:
+    black api/
+    ruff check api/ --fix
