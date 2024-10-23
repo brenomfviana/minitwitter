@@ -11,6 +11,8 @@ services:
     build:
       context: ../../../
       dockerfile: ./ops/dev/api/Dockerfile
+    ports:
+      - "8000:8000"
     environment:
       - CONN_MAX_AGE=${CONN_MAX_AGE}
       - DB_HOST=${DB_HOST}
