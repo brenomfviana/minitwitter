@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.9-slim-bookworm
 WORKDIR /api
 
 COPY ./api/pyproject.toml ./api/poetry.lock /api/

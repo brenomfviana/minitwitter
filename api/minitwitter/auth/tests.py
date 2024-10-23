@@ -3,21 +3,18 @@ from rest_framework import status
 from user.models import User
 
 
-class AuthTestCase(BaseTestCase):
-    def setUp(self):
-        super().setUp()
-
+class AuthViewSetTestCase(BaseTestCase):
     def test_login_1(self):
         self.user = User.objects.create_user(
-            username="testuser",
-            password="testpass",
+            username="username",
+            password="password",
         )
 
         response = self.api.post(
             path="/api/auth/login/",
             data={
-                "username": "testuser",
-                "password": "testpass",
+                "username": "username",
+                "password": "password",
             },
             format="json",
         )
@@ -30,15 +27,15 @@ class AuthTestCase(BaseTestCase):
 
     def test_refresh_1(self):
         self.user = User.objects.create_user(
-            username="testuser",
-            password="testpass",
+            username="username",
+            password="password",
         )
 
         response = self.api.post(
             path="/api/auth/login/",
             data={
-                "username": "testuser",
-                "password": "testpass",
+                "username": "username",
+                "password": "password",
             },
             format="json",
         )
