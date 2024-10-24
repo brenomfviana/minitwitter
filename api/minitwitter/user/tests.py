@@ -1,8 +1,8 @@
-from common.test_utils import BaseTestCase
+from common.test_utils import APITestCase
 from rest_framework import status
 
 
-class UserViewSetTestCase(BaseTestCase):
+class UserViewSetTestCase(APITestCase):
     def test_create_user_1(self):
         data = {
             "username": "username",

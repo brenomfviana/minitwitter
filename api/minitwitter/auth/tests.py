@@ -1,9 +1,9 @@
-from common.test_utils import BaseTestCase
+from common.test_utils import APITestCase
 from rest_framework import status
 from user.models import User
 
 
-class AuthViewSetTestCase(BaseTestCase):
+class AuthViewSetTestCase(APITestCase):
     def test_login_1(self):
         self.user = User.objects.create_user(
             username="username",

@@ -1,7 +1,12 @@
-from django.test import TestCase
+from django.test import TestCase as DjangoTestCase
+from rest_framework.test import APITestCase as DRFAPITestCase
 
 
-class BaseTestCase(TestCase):
+class BaseTestCase(DjangoTestCase):
+    pass
+
+
+class APITestCase(DRFAPITestCase, BaseTestCase):
     def setUp(self):
         super().setUp()
 
