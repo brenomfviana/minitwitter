@@ -30,10 +30,9 @@ services:
     container_name: container-psql
     image: docker.io/library/postgres:15.3-alpine
     environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
