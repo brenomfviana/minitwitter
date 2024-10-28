@@ -1,16 +1,67 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from .models import User
+from .models import Follower, User
 from .serializers import UserSerializer
 
 
 class UserViewSet(ViewSet):
+    def get_permissions(self):
+        if self.action == "create":
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
+
     def create(self, request: Request) -> Response:
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = User.objects.create_user(**serializer.validated_data)
+        data = serializer.validated_data
+        data["password"] = make_password(data["password"])
+        user = User.objects.create(**data)
         serializer = UserSerializer(instance=user)
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(
+        detail=True,
+        methods=["patch"],
+    )
+    def follow(self, request, pk):
+        try:
+            to_follow = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found!"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        Follower.objects.create(
+            following=to_follow,
+            follower=request.user,
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=True,
+        methods=["patch"],
+    )
+    def unfollow(self, request, pk):
+        try:
+            follower = Follower.objects.get(
+                following__id=pk,
+                follower=request.user,
+            )
+            follower.delete()
+        except Follower.DoesNotExist:
+            return Response(
+                {"error": "User not found!"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(status=status.HTTP_204_NO_CONTENT)

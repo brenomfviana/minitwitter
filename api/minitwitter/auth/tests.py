@@ -1,4 +1,4 @@
-from common.test_utils import APITestCase
+from common.test_utils.setup import APITestCase
 from rest_framework import status
 from user.models import User
 
