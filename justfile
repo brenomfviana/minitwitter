@@ -20,7 +20,10 @@ down:
 restart: down up
 
 logs:
-    docker compose -f {{API_COMPOSE}} logs --follow=true {{API_SERVICE}}
+    docker compose -f {{API_COMPOSE}} logs --follow=true {{API_SERVICE}} psql
+
+remove-volumes:
+	docker compose -f {{API_COMPOSE}} down -v
 
 test:
     docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python minitwitter/manage.py test --noinput ./minitwitter
