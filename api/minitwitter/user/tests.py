@@ -5,8 +5,8 @@ from rest_framework import status
 from user.models import Follower
 
 
-class UserViewSetTestCase(APITestCase):
-    def test_create_user_1(self):
+class UserTestCase(APITestCase):
+    def test_create_user_1_success(self):
         data = {
             "username": "username",
             "password": "password",
@@ -14,7 +14,10 @@ class UserViewSetTestCase(APITestCase):
             "name": "User",
         }
 
-        response = self.api.post(path="/api/users/", data=data,)
+        response = self.api.post(
+            path="/api/users/",
+            data=data,
+        )
 
         self.assertEqual(
             response.status_code,
@@ -27,23 +30,51 @@ class UserViewSetTestCase(APITestCase):
             response.data,
             response.data,
         )
-        self.assertEquals(
-            data["email"],
+        self.assertEqual(
             response.data["email"],
+            data["email"],
             response.data,
         )
-        self.assertEquals(
-            data["username"],
+        self.assertEqual(
             response.data["username"],
+            data["username"],
             response.data,
         )
-        self.assertEquals(
-            data["name"],
+        self.assertEqual(
             response.data["name"],
+            data["name"],
             response.data,
         )
 
-    def test_follow_1(self):
+    def test_create_user_2_invalid_email(self):
+        data = {
+            "username": "username",
+            "password": "password",
+            "email": "user@email",
+            "name": "User",
+        }
+
+        response = self.api.post(
+            path="/api/users/",
+            data=data,
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+            response,
+        )
+        self.assertEqual(
+            response.data,
+            {
+                "email": ["Enter a valid email address."],
+            },
+            response.data,
+        )
+
+
+class FollowerTestCase(APITestCase):
+    def test_follow_1_success(self):
         user1 = given_a_user()
         user2 = given_a_user()
 
@@ -61,6 +92,32 @@ class UserViewSetTestCase(APITestCase):
         )
 
         self.assertEqual(Follower.objects.count(), 1)
+
+    def test_follow_2_invalid_user(self):
+        user1 = given_a_user()
+
+        self.assertEqual(Follower.objects.count(), 0)
+
+        invalid_id = "224f5c75-03d7-4e1b-9445-caa67ac80143"
+        response = self.api.patch(
+            path=f"/api/users/{invalid_id}/follow/",
+            **self.login(user=user1),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+            response,
+        )
+        self.assertEqual(
+            response.data,
+            {
+                "error": "User not found!",
+            },
+            response.data,
+        )
+
+        self.assertEqual(Follower.objects.count(), 0)
 
     def test_unfollow_1(self):
         user1 = given_a_user()
@@ -80,3 +137,30 @@ class UserViewSetTestCase(APITestCase):
         )
 
         self.assertEqual(Follower.objects.count(), 0)
+
+    def test_unfollow_2_invalid_user(self):
+        user1 = given_a_user()
+        given_a_user(followers=[user1])
+
+        self.assertEqual(Follower.objects.count(), 1)
+
+        invalid_id = "224f5c75-03d7-4e1b-9445-caa67ac80143"
+        response = self.api.patch(
+            path=f"/api/users/{invalid_id}/unfollow/",
+            **self.login(user=user1),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+            response,
+        )
+        self.assertEqual(
+            response.data,
+            {
+                "error": "User not found!",
+            },
+            response.data,
+        )
+
+        self.assertEqual(Follower.objects.count(), 1)
