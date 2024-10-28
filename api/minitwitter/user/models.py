@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 )
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.utils.functional import cached_property
 
 
 class User(AbstractBaseUser, PermissionsMixin, BaseModel):
@@ -49,6 +50,14 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     def __str__(self):
         return f"User ({self.username})"
+
+    @cached_property
+    def followers_count(self):
+        return Follower.objects.filter(following=self).count()
+
+    @cached_property
+    def following_count(self):
+        return Follower.objects.filter(follower=self).count()
 
 
 class Follower(BaseModel):

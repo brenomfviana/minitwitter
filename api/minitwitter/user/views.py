@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from .models import Follower, User
-from .serializers import UserSerializer
+from .serializers import UserProfileSerializer, UserSerializer
 
 
 class UserViewSet(ViewSet):
@@ -65,3 +65,21 @@ class UserViewSet(ViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=True,
+        methods=["get"],
+    )
+    def profile(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            serializer = UserProfileSerializer(instance=user)
+            return Response(
+                data=serializer.data,
+                status=status.HTTP_200_OK,
+            )
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found!"},
+                status=status.HTTP_404_NOT_FOUND,
+            )

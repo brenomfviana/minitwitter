@@ -64,10 +64,38 @@ class UserTestCase(APITestCase):
             status.HTTP_400_BAD_REQUEST,
             response,
         )
-        self.assertEqual(
+        self.assertDictEqual(
             response.data,
             {
                 "email": ["Enter a valid email address."],
+            },
+            response.data,
+        )
+
+    def test_profile_1(self):
+        user1 = given_a_user()
+        user2 = given_a_user(followers=[user1])
+
+        response = self.api.get(
+            path=f"/api/users/{user2.id}/profile/",
+            **self.login(user=user1),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            response,
+        )
+
+        self.assertDictEqual(
+            response.data,
+            {
+                "id": str(user2.id),
+                "email": user2.email,
+                "username": user2.username,
+                "name": user2.name,
+                "followers_count": user2.followers_count,
+                "following_count": user2.following_count,
             },
             response.data,
         )
@@ -109,7 +137,7 @@ class FollowerTestCase(APITestCase):
             status.HTTP_404_NOT_FOUND,
             response,
         )
-        self.assertEqual(
+        self.assertDictEqual(
             response.data,
             {
                 "error": "User not found!",
@@ -155,7 +183,7 @@ class FollowerTestCase(APITestCase):
             status.HTTP_404_NOT_FOUND,
             response,
         )
-        self.assertEqual(
+        self.assertDictEqual(
             response.data,
             {
                 "error": "User not found!",
