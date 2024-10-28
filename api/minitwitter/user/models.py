@@ -28,6 +28,10 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
         max_length=150,
     )
 
+    is_active = models.BooleanField(
+        verbose_name="is active?",
+        default=True,
+    )
     is_staff = models.BooleanField(
         "is staff?",
         default=False,
@@ -45,3 +49,27 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     def __str__(self):
         return f"User ({self.username})"
+
+
+class Follower(BaseModel):
+    following = models.ForeignKey(
+        verbose_name="following",
+        to=User,
+        on_delete=models.CASCADE,
+        related_name="followings",
+    )
+    follower = models.ForeignKey(
+        verbose_name="follower",
+        to=User,
+        on_delete=models.CASCADE,
+        related_name="followers",
+    )
+
+    class Meta:
+        unique_together = ("following", "follower")
+        ordering = ["-created_at"]
+        verbose_name = "Follower"
+        verbose_name_plural = "Followers"
+
+    def __str__(self):
+        return f"User {self.follower.username} follows User {self.following.username}"
