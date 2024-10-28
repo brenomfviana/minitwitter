@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from user.models import Follower, User
 
 from .factories import UserFactory
@@ -14,6 +15,8 @@ def given_a_user(
 ):
     if followers is None:
         followers = []
+    if "password" in kwargs:
+        kwargs["password"] = make_password("password")
     user = UserFactory.create(**kwargs)
     for follower in followers:
         when_follow(

@@ -1,11 +1,11 @@
 from common.test_utils.setup import APITestCase
+from common.test_utils.steps import given_a_user
 from rest_framework import status
-from user.models import User
 
 
 class AuthViewSetTestCase(APITestCase):
     def test_login_1(self):
-        self.user = User.objects.create_user(
+        given_a_user(
             username="username",
             password="password",
         )
@@ -26,7 +26,7 @@ class AuthViewSetTestCase(APITestCase):
         )
 
     def test_refresh_1(self):
-        self.user = User.objects.create_user(
+        given_a_user(
             username="username",
             password="password",
         )
