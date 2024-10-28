@@ -14,17 +14,32 @@ class UserViewSetTestCase(APITestCase):
             "name": "User",
         }
 
-        response = self.api.post(path="/api/users/", data=data)
+        response = self.api.post(path="/api/users/", data=data,)
 
         self.assertEqual(
             response.status_code,
             status.HTTP_201_CREATED,
-            response.data,
+            response,
         )
 
         self.assertIn(
             "id",
             response.data,
+            response.data,
+        )
+        self.assertEquals(
+            data["email"],
+            response.data["email"],
+            response.data,
+        )
+        self.assertEquals(
+            data["username"],
+            response.data["username"],
+            response.data,
+        )
+        self.assertEquals(
+            data["name"],
+            response.data["name"],
             response.data,
         )
 

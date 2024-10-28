@@ -34,4 +34,5 @@ class APITestCase(DRFAPITestCase, BaseTestCase):
         return self._credentials()
 
     def _credentials(self):
-        return {"HTTP_AUTHORIZATION": f"Bearer {self.last_login}"}
+        access_token: str = self.last_login["access"]
+        return {"HTTP_AUTHORIZATION": f"Bearer {access_token}"}
