@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 from rest_framework.decorators import action
@@ -7,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from .models import Follower, User
-from .serializers import UserProfileSerializer, UserSerializer
+from .serializers import CreateUserSerializer, UserProfileSerializer
 
 
 class UserViewSet(ViewSet):
@@ -19,12 +21,12 @@ class UserViewSet(ViewSet):
         return super().get_permissions()
 
     def create(self, request: Request) -> Response:
-        serializer = UserSerializer(data=request.data)
+        serializer = CreateUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data["password"] = make_password(data["password"])
         user = User.objects.create(**data)
-        serializer = UserSerializer(instance=user)
+        serializer = UserProfileSerializer(instance=user)
         return Response(
             data=serializer.data,
             status=status.HTTP_201_CREATED,
@@ -34,7 +36,11 @@ class UserViewSet(ViewSet):
         detail=True,
         methods=["patch"],
     )
-    def follow(self, request, pk):
+    def follow(
+        self,
+        request: Request,
+        pk: uuid4,
+    ) -> Response:
         try:
             to_follow = User.objects.get(pk=pk)
         except User.DoesNotExist:
@@ -52,7 +58,11 @@ class UserViewSet(ViewSet):
         detail=True,
         methods=["patch"],
     )
-    def unfollow(self, request, pk):
+    def unfollow(
+        self,
+        request: Request,
+        pk: uuid4,
+    ) -> Response:
         try:
             follower = Follower.objects.get(
                 following__id=pk,
@@ -70,7 +80,11 @@ class UserViewSet(ViewSet):
         detail=True,
         methods=["get"],
     )
-    def profile(self, request, pk):
+    def profile(
+        self,
+        request: Request,
+        pk: uuid4,
+    ) -> Response:
         try:
             user = User.objects.get(pk=pk)
             serializer = UserProfileSerializer(instance=user)

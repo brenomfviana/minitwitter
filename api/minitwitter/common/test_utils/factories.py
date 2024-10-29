@@ -23,8 +23,12 @@ class UserFactory(BaseModelFactory):
     class Meta:
         model = User
 
-    username = Sequence(lambda n: f"{Faker().user_name()}{n}")
-    email = LazyAttribute(lambda x: f"{x.username}@example.net")
-    password = make_password(DEFAULT_PASSWORD)
+    username = Sequence(
+        function=lambda n: f"{Faker().user_name()}{n}",
+    )
+    email = LazyAttribute(
+        function=lambda x: f"{x.username}@example.net",
+    )
+    password = make_password(password=DEFAULT_PASSWORD)
     is_staff = False
     is_superuser = False

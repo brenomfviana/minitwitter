@@ -81,4 +81,8 @@ class Follower(BaseModel):
         verbose_name_plural = "Followers"
 
     def __str__(self):
-        return f"User {self.follower.username} follows User {self.following.username}"
+        return (
+            f"User {self.follower.username} "
+            f"follows "
+            f"User {self.following.username}"
+        )
