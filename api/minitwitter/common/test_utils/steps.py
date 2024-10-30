@@ -1,7 +1,8 @@
 from django.contrib.auth.hashers import make_password
+from post.models import Like, Post
 from user.models import Follower, User
 
-from .factories import UserFactory
+from .factories import PostFactory, UserFactory
 
 
 def user_stub(**kwargs):
@@ -33,4 +34,33 @@ def when_follow(
     Follower.objects.create(
         follower=follower,
         following=following,
+    )
+
+
+def given_a_post(
+    user=None,
+    likers: list[User] = None,
+    **kwargs,
+):
+    if user is None:
+        user = given_a_user()
+    if likers is None:
+        likers = []
+    kwargs.update({"user": user})
+    post = PostFactory.create(**kwargs)
+    for liker in likers:
+        when_like(
+            user=liker,
+            post=post,
+        )
+    return post
+
+
+def when_like(
+    user: User,
+    post: Post,
+):
+    Like.objects.create(
+        user=user,
+        post=post,
     )

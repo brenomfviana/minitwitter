@@ -65,7 +65,7 @@ class UserViewSet(ViewSet):
     ) -> Response:
         try:
             follower = Follower.objects.get(
-                following__id=pk,
+                following__pk=pk,
                 follower=request.user,
             )
             follower.delete()

@@ -21,6 +21,8 @@ class Post(BaseModel):
         "post.Post",
         on_delete=models.DO_NOTHING,
         related_name="posts",
+        null=True,
+        blank=True,
     )
 
     class Meta:

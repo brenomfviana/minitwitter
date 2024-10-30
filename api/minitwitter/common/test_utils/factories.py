@@ -3,6 +3,7 @@ from factory import LazyAttribute, Sequence
 from factory.django import DjangoModelFactory
 from factory.faker import Faker as FactoryFaker
 from faker import Faker
+from post.models import Post
 from user.models import User
 
 from common.models import BaseModel
@@ -32,3 +33,10 @@ class UserFactory(BaseModelFactory):
     password = make_password(password=DEFAULT_PASSWORD)
     is_staff = False
     is_superuser = False
+
+
+class PostFactory(BaseModelFactory):
+    class Meta:
+        model = Post
+
+    text = "post content"

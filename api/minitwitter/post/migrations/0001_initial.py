@@ -45,6 +45,8 @@ class Migration(migrations.Migration):
                 (
                     "parent",
                     models.ForeignKey(
+                        blank=True,
+                        null=True,
                         on_delete=django.db.models.deletion.DO_NOTHING,
                         related_name="posts",
                         to="post.post",
