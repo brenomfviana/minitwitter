@@ -29,6 +29,19 @@ class PostTestCase(APITestCase):
 
         self.assertEqual(Post.objects.count(), 1)
 
+        post1 = Post.objects.last()
+        self.assertEqual(
+            response.data,
+            {
+                "id": str(post1.id),
+                "text": "post content",
+                "user_username": user1.username,
+                "user_name": user1.name,
+                "like_count": post1.like_count,
+            },
+            response.data,
+        )
+
     def test_update_1(self):
         user1 = given_a_user()
         post1 = given_a_post(user=user1)
@@ -56,6 +69,7 @@ class PostTestCase(APITestCase):
                 "text": "post content 2",
                 "user_username": user1.username,
                 "user_name": user1.name,
+                "like_count": post1.like_count,
             },
         )
 
@@ -157,12 +171,14 @@ class FeedTestCase(APITestCase):
                         "text": "both user1 and user 2 can see",
                         "user_username": post2.user.username,
                         "user_name": post2.user.name,
+                        "like_count": post2.like_count,
                     },
                     {
                         "id": str(post1.id),
                         "text": "only user1 can see",
                         "user_username": post1.user.username,
                         "user_name": post1.user.name,
+                        "like_count": post1.like_count,
                     },
                 ],
             },
@@ -194,6 +210,7 @@ class FeedTestCase(APITestCase):
                         "text": "both user1 and user 2 can see",
                         "user_username": post2.user.username,
                         "user_name": post2.user.name,
+                        "like_count": post2.like_count,
                     },
                 ],
             },

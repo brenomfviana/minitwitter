@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from django.utils.functional import cached_property
 from user.models import User
 
 
@@ -32,6 +33,10 @@ class Post(BaseModel):
 
     def __str__(self):
         return f"Post ({self.id})"
+
+    @cached_property
+    def like_count(self):
+        return Like.objects.filter(post=self).count()
 
 
 class Like(BaseModel):

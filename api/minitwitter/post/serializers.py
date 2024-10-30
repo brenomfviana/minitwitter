@@ -7,6 +7,9 @@ class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ["text"]
+        extra_kwargs = {
+            "text": {"write_only": True},
+        }
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -26,4 +29,12 @@ class PostSerializer(serializers.ModelSerializer):
             "text",
             "user_username",
             "user_name",
+            "like_count",
         ]
+        extra_kwargs = {
+            "id": {"read_only": True},
+            "text": {"read_only": True},
+            "user_username": {"read_only": True},
+            "user_name": {"read_only": True},
+            "like_count": {"read_only": True},
+        }

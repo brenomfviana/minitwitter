@@ -7,13 +7,15 @@ class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            "id",
             "email",
             "username",
             "name",
             "password",
         ]
         extra_kwargs = {
+            "email": {"write_only": True},
+            "username": {"write_only": True},
+            "name": {"write_only": True},
             "password": {"write_only": True},
         }
 
@@ -30,6 +32,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "following_count",
         ]
         extra_kwargs = {
+            "id": {"read_only": True},
             "email": {"read_only": True},
             "username": {"read_only": True},
             "name": {"read_only": True},
