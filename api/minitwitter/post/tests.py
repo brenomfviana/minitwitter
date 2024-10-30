@@ -115,3 +115,87 @@ class PostTestCase(APITestCase):
         )
 
         self.assertEqual(Like.objects.count(), 0)
+
+
+class FeedTestCase(APITestCase):
+    def test_feed_1(self):
+        user1 = given_a_user()
+        user2 = given_a_user(followers=[user1])
+        user3 = given_a_user(followers=[user1, user2])
+
+        post1 = given_a_post(
+            user=user2,
+            text="only user1 can see",
+        )
+        post2 = given_a_post(
+            user=user3,
+            text="both user1 and user 2 can see",
+        )
+
+        # user1's feed
+
+        response = self.api.get(
+            path="/api/feed/",
+            **self.login(user=user1),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            response,
+        )
+
+        self.assertDictEqual(
+            response.data,
+            {
+                "count": 2,
+                "previous": None,
+                "next": None,
+                "results": [
+                    {
+                        "id": str(post2.id),
+                        "text": "both user1 and user 2 can see",
+                        "user_username": post2.user.username,
+                        "user_name": post2.user.name,
+                    },
+                    {
+                        "id": str(post1.id),
+                        "text": "only user1 can see",
+                        "user_username": post1.user.username,
+                        "user_name": post1.user.name,
+                    },
+                ],
+            },
+            response.data,
+        )
+
+        # user2's feed
+
+        response = self.api.get(
+            path="/api/feed/",
+            **self.login(user=user2),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            response,
+        )
+
+        self.assertDictEqual(
+            response.data,
+            {
+                "count": 1,
+                "previous": None,
+                "next": None,
+                "results": [
+                    {
+                        "id": str(post2.id),
+                        "text": "both user1 and user 2 can see",
+                        "user_username": post2.user.username,
+                        "user_name": post2.user.name,
+                    },
+                ],
+            },
+            response.data,
+        )

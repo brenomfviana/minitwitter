@@ -21,7 +21,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_PORT=${DB_PORT}
     volumes:
-      - ../../../api/:/api/
+      - ../../../api/minitwitter/:/api/
     depends_on:
       - psql
     restart: on-failure

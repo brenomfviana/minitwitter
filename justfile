@@ -5,6 +5,7 @@ API_COMPOSE := './ops/dev/api/compose.yml'
 
 API_SERVICE := 'api'
 
+
 #
 
 build:
@@ -25,8 +26,11 @@ logs:
 remove-volumes:
 	docker compose -f {{API_COMPOSE}} down -v
 
-test:
-    docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python minitwitter/manage.py test --noinput ./minitwitter
+test-all:
+    docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python manage.py test --noinput
+
+test TEST:
+    docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python manage.py test --noinput {{TEST}}
 
 fmt:
     black api/

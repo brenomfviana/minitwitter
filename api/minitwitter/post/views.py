@@ -1,11 +1,14 @@
 from uuid import uuid4
 
+from common.pagination import FeedPagination
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
+from user.models import Follower
 
 from .models import Like, Post
 from .serializers import CreatePostSerializer, PostSerializer
@@ -109,3 +112,32 @@ class PostViewSet(ViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FeedAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        following = Follower.objects.filter(
+            follower=request.user,
+        ).values_list(
+            "following",
+            flat=True,
+        )
+        feed = Post.objects.filter(
+            user__in=following,
+        ).order_by(
+            "-created_at",
+        )
+        serializer = PostSerializer(
+            instance=feed,
+            many=True,
+        )
+        paginator = FeedPagination()
+        page = paginator.paginate_queryset(feed, request)
+        if page is not None:
+            return paginator.get_paginated_response(serializer.data)
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
