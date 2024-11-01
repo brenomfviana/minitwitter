@@ -48,6 +48,7 @@ DEFAULT_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
+    "drf_spectacular",
 ]
 
 LOCAL_APPS = [
@@ -164,10 +165,23 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30000),
     "REFRESH_TOKEN_LIFETIME": timedelta(hours=1000),
     "TOKEN_OBTAIN_SERIALIZER": "auth.serializers.APITokenObtainPairSerializer",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "MiniTwitter",
+    "DESCRIPTION": "API documentation for MiniTwitter.",
+    "VERSION": "0.0.1",
+    "SERVERS": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Development server",
+        },
+    ],
 }

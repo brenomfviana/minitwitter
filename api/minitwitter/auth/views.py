@@ -1,4 +1,5 @@
 from django.http.request import QueryDict
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -11,6 +12,10 @@ from .serializers import APITokenObtainPairSerializer, APITokenRefreshSerializer
 
 
 class AuthViewSet(ViewSet):
+    @extend_schema(
+        request=APITokenObtainPairSerializer,
+        responses={201: APITokenRefreshSerializer},
+    )
     @action(
         detail=False,
         methods=["post"],
@@ -23,6 +28,10 @@ class AuthViewSet(ViewSet):
             request.data,
         )
 
+    @extend_schema(
+        request=APITokenRefreshSerializer,
+        responses={201: APITokenRefreshSerializer},
+    )
     @action(
         detail=False,
         methods=["post"],

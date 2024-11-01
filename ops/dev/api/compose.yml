@@ -6,8 +6,8 @@ services:
     container_name: container-django
     image: api:latest
     command: >
-      bash -c "python minitwitter/manage.py migrate
-      && python minitwitter/manage.py runserver 0.0.0.0:8000"
+      bash -c "python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000"
     build:
       context: ../../../
       dockerfile: ./ops/dev/api/Dockerfile

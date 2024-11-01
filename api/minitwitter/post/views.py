@@ -1,8 +1,10 @@
 from uuid import uuid4
 
 from common.pagination import FeedPagination
+from common.serializers import create_paginated_serializer
 from django.core.cache import cache
 from django.db.models import QuerySet
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -19,6 +21,10 @@ from .serializers import CreatePostSerializer, PostSerializer
 class PostViewSet(ViewSet):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=CreatePostSerializer,
+        responses={201: PostSerializer},
+    )
     def create(self, request: Request) -> Response:
         serializer = CreatePostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -32,6 +38,10 @@ class PostViewSet(ViewSet):
             status=status.HTTP_201_CREATED,
         )
 
+    @extend_schema(
+        request=CreatePostSerializer,
+        responses={201: PostSerializer},
+    )
     def update(
         self,
         request: Request,
@@ -138,6 +148,9 @@ class FeedAPIView(APIView):
         )
         return serializer.data
 
+    @extend_schema(
+        responses={201: create_paginated_serializer(PostSerializer)},
+    )
     def get(self, request: Request) -> Response:
         paginator = self.pagination_class()
 

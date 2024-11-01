@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.contrib.auth.hashers import make_password
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -20,6 +21,10 @@ class UserViewSet(ViewSet):
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
+    @extend_schema(
+        request=CreateUserSerializer,
+        responses={201: UserProfileSerializer},
+    )
     def create(self, request: Request) -> Response:
         serializer = CreateUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -76,6 +81,9 @@ class UserViewSet(ViewSet):
             )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @extend_schema(
+        responses={201: UserProfileSerializer},
+    )
     @action(
         detail=True,
         methods=["get"],

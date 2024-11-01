@@ -1,8 +1,8 @@
-from django.test import tag
 from time import sleep
 
 from common.test_utils.setup import APITestCase
 from common.test_utils.steps import given_a_post, given_a_user
+from django.test import tag
 from rest_framework import status
 
 from post.models import Like, Post
