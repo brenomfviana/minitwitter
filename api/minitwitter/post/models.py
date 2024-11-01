@@ -14,6 +14,12 @@ class Post(BaseModel):
         verbose_name="post content",
         max_length=128,
     )
+    image = models.ImageField(
+        verbose_name="post image",
+        upload_to="images",
+        null=True,
+        blank=True,
+    )
     is_reply = models.BooleanField(
         verbose_name="is reply?",
         default=False,

@@ -15,7 +15,11 @@ from rest_framework.viewsets import ViewSet
 from user.models import Follower
 
 from .models import Like, Post
-from .serializers import CreatePostSerializer, PostSerializer
+from .serializers import (
+    CreatePostSerializer,
+    PostSerializer,
+    UpdatePostSerializer,
+)
 
 
 class PostViewSet(ViewSet):
@@ -39,7 +43,7 @@ class PostViewSet(ViewSet):
         )
 
     @extend_schema(
-        request=CreatePostSerializer,
+        request=UpdatePostSerializer,
         responses={201: PostSerializer},
     )
     def update(
@@ -47,7 +51,7 @@ class PostViewSet(ViewSet):
         request: Request,
         pk: uuid4,
     ) -> Response:
-        serializer = CreatePostSerializer(data=request.data)
+        serializer = UpdatePostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         query = Post.objects.filter(pk=pk)
         query.update(

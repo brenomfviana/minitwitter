@@ -9,7 +9,7 @@ from post.models import Like, Post
 
 
 class PostTestCase(APITestCase):
-    def test_create_1(self):
+    def test_create_1_only_text(self):
         user1 = given_a_user()
 
         self.assertEqual(Post.objects.count(), 0)
@@ -33,6 +33,52 @@ class PostTestCase(APITestCase):
         self.assertEqual(Post.objects.count(), 1)
 
         post1 = Post.objects.last()
+        self.assertEqual(
+            response.data,
+            {
+                "id": str(post1.id),
+                "text": "post content",
+                "image": None,
+                "user_username": user1.username,
+                "user_name": user1.name,
+                "like_count": post1.like_count,
+            },
+            response.data,
+        )
+
+    def test_create_2_with_image(self):
+        user1 = given_a_user()
+
+        self.assertEqual(Post.objects.count(), 0)
+
+        data = {
+            "text": "post content",
+            "image": open("post/test_utils/image.jpg", "rb"),
+        }
+
+        response = self.api.post(
+            path="/api/posts/",
+            data=data,
+            format="multipart",
+            **self.login(user=user1),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            response,
+        )
+
+        self.assertEqual(Post.objects.count(), 1)
+
+        self.assertIn(
+            "/images/image",
+            response.data["image"],
+            response.data,
+        )
+
+        post1 = Post.objects.last()
+        del response.data["image"]
         self.assertEqual(
             response.data,
             {
@@ -70,6 +116,7 @@ class PostTestCase(APITestCase):
             {
                 "id": str(post1.id),
                 "text": "post content 2",
+                "image": None,
                 "user_username": user1.username,
                 "user_name": user1.name,
                 "like_count": post1.like_count,
@@ -163,6 +210,7 @@ class PostTestCase(APITestCase):
             {
                 "id": str(post2.id),
                 "text": "reply post",
+                "image": None,
                 "user_username": user1.username,
                 "user_name": user1.name,
                 "like_count": post2.like_count,
@@ -209,6 +257,7 @@ class FeedTestCase(APITestCase):
                     {
                         "id": str(post2.id),
                         "text": "both user1 and user 2 can see",
+                        "image": None,
                         "user_username": post2.user.username,
                         "user_name": post2.user.name,
                         "like_count": post2.like_count,
@@ -216,6 +265,7 @@ class FeedTestCase(APITestCase):
                     {
                         "id": str(post1.id),
                         "text": "only user1 can see",
+                        "image": None,
                         "user_username": post1.user.username,
                         "user_name": post1.user.name,
                         "like_count": post1.like_count,
@@ -248,6 +298,7 @@ class FeedTestCase(APITestCase):
                     {
                         "id": str(post2.id),
                         "text": "both user1 and user 2 can see",
+                        "image": None,
                         "user_username": post2.user.username,
                         "user_name": post2.user.name,
                         "like_count": post2.like_count,
