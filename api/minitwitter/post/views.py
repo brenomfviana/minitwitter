@@ -1,6 +1,8 @@
 from uuid import uuid4
 
 from common.pagination import FeedPagination
+from django.core.cache import cache
+from django.db.models import QuerySet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -115,29 +117,64 @@ class PostViewSet(ViewSet):
 
 
 class FeedAPIView(APIView):
+    pagination_class = FeedPagination
     permission_classes = [IsAuthenticated]
 
-    def get(self, request: Request) -> Response:
-        following = Follower.objects.filter(
-            follower=request.user,
-        ).values_list(
-            "following",
-            flat=True,
-        )
-        feed = Post.objects.filter(
-            user__in=following,
-        ).order_by(
-            "-created_at",
+    cache_timeout = 60
+
+    def _paginate_and_serialize(
+        self,
+        paginator: FeedPagination,
+        queryset: QuerySet,
+        request: Request,
+    ) -> dict:
+        paginated_feed = paginator.paginate_queryset(
+            queryset=queryset,
+            request=request,
         )
         serializer = PostSerializer(
-            instance=feed,
+            instance=paginated_feed,
             many=True,
         )
-        paginator = FeedPagination()
-        page = paginator.paginate_queryset(feed, request)
-        if page is not None:
-            return paginator.get_paginated_response(serializer.data)
-        return Response(
-            data=serializer.data,
-            status=status.HTTP_201_CREATED,
-        )
+        return serializer.data
+
+    def get(self, request: Request) -> Response:
+        paginator = self.pagination_class()
+
+        page = request.query_params.get("page", 1)
+        cache_key = f"user_feed_{request.user.id}_page_{page}"
+
+        feed_data = cache.get(cache_key)
+
+        if feed_data is None:
+            following = Follower.objects.filter(
+                follower=request.user,
+            ).values_list(
+                "following",
+                flat=True,
+            )
+            feed = Post.objects.filter(
+                user__in=following,
+            ).order_by(
+                "-created_at",
+            )
+
+            feed_data = self._paginate_and_serialize(
+                queryset=feed,
+                request=request,
+                paginator=paginator,
+            )
+
+            cache.set(
+                key=cache_key,
+                value=feed_data,
+                timeout=self.cache_timeout,
+            )
+        else:
+            feed_data = self._paginate_and_serialize(
+                queryset=feed_data,
+                request=request,
+                paginator=paginator,
+            )
+
+        return paginator.get_paginated_response(data=feed_data)

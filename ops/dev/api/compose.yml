@@ -24,6 +24,7 @@ services:
       - ../../../api/minitwitter/:/api/
     depends_on:
       - psql
+      - redis
     restart: on-failure
 
   psql:
@@ -38,3 +39,11 @@ services:
     volumes:
       - psql_volume:/var/lib/postgresql/data/
     restart: on-failure
+
+  redis:
+    image: docker.io/library/redis:6.0.5-alpine3.12
+    container_name: container-redis
+    hostname: "redis"
+    restart: on-failure
+    ports:
+      - "6379:6379"

@@ -1,3 +1,5 @@
+from time import sleep
+
 from common.test_utils.setup import APITestCase
 from common.test_utils.steps import given_a_post, given_a_user
 from rest_framework import status
@@ -214,5 +216,78 @@ class FeedTestCase(APITestCase):
                     },
                 ],
             },
+            response.data,
+        )
+
+    def test_feed_2_cache(self):
+        user1 = given_a_user()
+        user2 = given_a_user(followers=[user1])
+
+        given_a_post(
+            user=user2,
+            text="user2's post 1",
+        )
+
+        credentials = self.login(user=user1)
+
+        response = self.api.get(
+            path="/api/feed/",
+            **credentials,
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            response,
+        )
+
+        self.assertEqual(
+            response.data.get("count"),
+            1,
+            response.data,
+        )
+
+        #
+
+        given_a_post(
+            user=user2,
+            text="user2's post 2",
+        )
+
+        response = self.api.get(
+            path="/api/feed/",
+            **credentials,
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            response,
+        )
+
+        self.assertEqual(
+            response.data.get("count"),
+            1,
+            response.data,
+        )
+
+        #
+
+        sleep(120)  # wait Redis container
+
+        response = self.api.get(
+            path="/api/feed/",
+            **credentials,
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            response,
+        )
+
+        self.assertEqual(
+            response.data.get("count"),
+            2,
             response.data,
         )

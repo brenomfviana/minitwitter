@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.test import TestCase as DjangoTestCase
 from rest_framework.test import APITestCase as DRFAPITestCase
 from user.models import User
@@ -16,6 +17,10 @@ class APITestCase(DRFAPITestCase, BaseTestCase):
         self.api = self.client
         self.client = None
         self.last_login = None
+
+    def tearDown(self):
+        self.last_login = None
+        cache.clear()
 
     def login(
         self,
