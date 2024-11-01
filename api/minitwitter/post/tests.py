@@ -133,6 +133,43 @@ class PostTestCase(APITestCase):
 
         self.assertEqual(Like.objects.count(), 0)
 
+    def test_reply_1(self):
+        user1 = given_a_user()
+        post1 = given_a_post(likers=[user1])
+
+        self.assertEqual(Post.objects.count(), 1)
+
+        data = {
+            "text": "reply post",
+        }
+
+        response = self.api.post(
+            path=f"/api/posts/{post1.id}/reply/",
+            data=data,
+            **self.login(user=user1),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            response,
+        )
+
+        self.assertEqual(Post.objects.count(), 2)
+
+        post2 = Post.objects.first()  # the most recent post is the first one
+        self.assertEqual(
+            response.data,
+            {
+                "id": str(post2.id),
+                "text": "reply post",
+                "user_username": user1.username,
+                "user_name": user1.name,
+                "like_count": post2.like_count,
+            },
+            response.data,
+        )
+
 
 class FeedTestCase(APITestCase):
     def test_feed_1(self):

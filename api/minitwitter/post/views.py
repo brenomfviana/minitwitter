@@ -83,6 +83,36 @@ class PostViewSet(ViewSet):
 
     @action(
         detail=True,
+        methods=["post"],
+    )
+    def reply(
+        self,
+        request: Request,
+        pk: uuid4,
+    ) -> Response:
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"error": "Post not found!"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        serializer = CreatePostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        post = Post.objects.create(
+            user=request.user,
+            is_reply=True,
+            parent=post,
+            **serializer.validated_data,
+        )
+        serializer = PostSerializer(instance=post)
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(
+        detail=True,
         methods=["patch"],
     )
     def like(
