@@ -1,3 +1,4 @@
+from django.test import tag
 from time import sleep
 
 from common.test_utils.setup import APITestCase
@@ -219,6 +220,7 @@ class FeedTestCase(APITestCase):
             response.data,
         )
 
+    @tag("slow", "integration")
     def test_feed_2_cache(self):
         user1 = given_a_user()
         user2 = given_a_user(followers=[user1])
