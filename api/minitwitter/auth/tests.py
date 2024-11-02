@@ -1,3 +1,5 @@
+from time import sleep
+
 from common.test_utils.setup import APITestCase
 from common.test_utils.steps import given_a_user
 from rest_framework import status
@@ -45,6 +47,8 @@ class AuthViewSetTestCase(APITestCase):
             status.HTTP_200_OK,
             response.data,
         )
+
+        sleep(1)  # wait Redis container (throttle uses Redis cache)
 
         response = self.api.post(
             path="/api/auth/refresh/",

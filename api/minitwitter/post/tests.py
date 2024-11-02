@@ -276,6 +276,7 @@ class FeedTestCase(APITestCase):
         )
 
         # user2's feed
+        sleep(1)  # wait Redis container (throttle uses Redis cache)
 
         response = self.api.get(
             path="/api/feed/",
