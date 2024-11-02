@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from common.notifications import EmailService
 from django.contrib.auth.hashers import make_password
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -56,6 +57,13 @@ class UserViewSet(ViewSet):
         Follower.objects.create(
             following=to_follow,
             follower=request.user,
+        )
+        EmailService().send.apply_async(
+            args=(
+                to_follow.email,
+                "You have a new follower!",
+                f"{request.user} just followed you!",
+            )
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
 

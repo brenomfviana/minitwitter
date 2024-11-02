@@ -1,18 +1,24 @@
 volumes:
   psql_volume: {}
 
+x-app: &api_base
+  image: api:latest
+  build:
+    context: ../../../
+    dockerfile: ./ops/dev/api/Dockerfile
+  volumes:
+    - ../../../api/minitwitter/:/api/
+  depends_on:
+    - psql
+    - redis
+
 services:
   api:
+    <<: *api_base
     container_name: container-django
-    image: api:latest
     command: >
       bash -c "python manage.py migrate
-      && python manage.py runserver 0.0.0.0:8000"
-    build:
-      context: ../../../
-      dockerfile: ./ops/dev/api/Dockerfile
-    ports:
-      - "8000:8000"
+      && python manage.py runserver 0.0.0.0:${API_PORT}"
     environment:
       - CONN_MAX_AGE=${CONN_MAX_AGE}
       - DB_HOST=${DB_HOST}
@@ -20,11 +26,20 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_PORT=${DB_PORT}
-    volumes:
-      - ../../../api/minitwitter/:/api/
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    restart: on-failure
     depends_on:
-      - psql
-      - redis
+      - celery
+
+  celery:
+    <<: *api_base
+    container_name: container-celery
+    command: celery --app=minitwitter worker --loglevel=info
+    environment:
+      - CELERY_BROKER_SERVICE=${CELERY_BROKER_SERVICE}
+      - CELERY_BROKER_HOST=${CELERY_BROKER_HOST}
+      - CELERY_BROKER_PORT=${CELERY_BROKER_PORT}
     restart: on-failure
 
   psql:
@@ -41,9 +56,8 @@ services:
     restart: on-failure
 
   redis:
-    image: docker.io/library/redis:6.0.5-alpine3.12
     container_name: container-redis
-    hostname: "redis"
-    restart: on-failure
+    image: docker.io/library/redis:6.0.5-alpine3.12
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    restart: on-failure

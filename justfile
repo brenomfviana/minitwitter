@@ -6,10 +6,19 @@ API_COMPOSE := './ops/dev/api/compose.yml'
 API_SERVICE := 'api'
 
 
-#
+# Set Up
+
+config-env:
+	cp .env.example ./ops/dev/api/.env
+	cp .env.example ./api/minitwitter/.env
 
 build:
     docker build --file {{API_CONTAINER}} --tag api:latest .
+
+setup: config-env build
+
+
+#
 
 up:
     docker compose -f {{API_COMPOSE}} up -d --remove-orphans
@@ -21,10 +30,13 @@ down:
 restart: down up
 
 logs:
-    docker compose -f {{API_COMPOSE}} logs --follow=true {{API_SERVICE}} psql
+    docker compose -f {{API_COMPOSE}} logs --follow=true {{API_SERVICE}} psql celery
 
 remove-volumes:
 	docker compose -f {{API_COMPOSE}} down -v
+
+shell:
+	docker compose -f {{API_COMPOSE}} exec {{API_SERVICE}} python manage.py shell
 
 test:
     docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python manage.py test --noinput --exclude=slow

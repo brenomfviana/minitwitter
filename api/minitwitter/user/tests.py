@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from common.test_utils.setup import APITestCase
 from common.test_utils.steps import given_a_user
 from rest_framework import status
@@ -108,10 +110,13 @@ class FollowerTestCase(APITestCase):
 
         self.assertEqual(Follower.objects.count(), 0)
 
-        response = self.api.patch(
-            path=f"/api/users/{user2.id}/follow/",
-            **self.login(user=user1),
-        )
+        with patch(
+            "common.notifications.EmailService.send"
+        ) as mocked_send_email:
+            response = self.api.patch(
+                path=f"/api/users/{user2.id}/follow/",
+                **self.login(user=user1),
+            )
 
         self.assertEqual(
             response.status_code,
@@ -120,6 +125,7 @@ class FollowerTestCase(APITestCase):
         )
 
         self.assertEqual(Follower.objects.count(), 1)
+        self.assertEqual(mocked_send_email.apply_async.call_count, 1)
 
     def test_follow_2_invalid_user(self):
         user1 = given_a_user()
