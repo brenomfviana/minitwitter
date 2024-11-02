@@ -10,6 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from user.models import Follower
@@ -24,6 +25,7 @@ from .serializers import (
 
 class PostViewSet(ViewSet):
     permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle]
 
     @extend_schema(
         request=CreatePostSerializer,
@@ -163,6 +165,7 @@ class PostViewSet(ViewSet):
 class FeedAPIView(APIView):
     pagination_class = FeedPagination
     permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle]
 
     cache_timeout = 60
 

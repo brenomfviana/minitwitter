@@ -8,6 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.viewsets import ViewSet
 
 from .models import Follower, User
@@ -18,8 +19,10 @@ class UserViewSet(ViewSet):
     def get_permissions(self):
         if self.action == "create":
             self.permission_classes = [AllowAny]
+            self.throttle_classes = [AnonRateThrottle]
         else:
             self.permission_classes = [IsAuthenticated]
+            self.throttle_classes = [UserRateThrottle]
         return super().get_permissions()
 
     @extend_schema(
