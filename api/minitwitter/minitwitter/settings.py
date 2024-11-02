@@ -49,9 +49,11 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
+    "celery",
 ]
 
 LOCAL_APPS = [
+    "common",
     "user",
     "post",
 ]
@@ -106,11 +108,15 @@ DATABASES = {
     }
 }
 
+CACHE_SERVICE = config("CACHE_SERVICE")
+CACHE_HOST = config("CACHE_HOST")
+CACHE_PORT = config("CACHE_PORT")
+CACHE_TIMEOUT = config("CACHE_TIMEOUT", default=None)
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
-        "TIMEOUT": 60,
+        "LOCATION": f"{CACHE_SERVICE}://{CACHE_HOST}:{CACHE_PORT}/1",
+        "TIMEOUT": int(CACHE_TIMEOUT) if CACHE_TIMEOUT else None,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -169,8 +175,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30000),
-    "REFRESH_TOKEN_LIFETIME": timedelta(hours=1000),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=1),
     "TOKEN_OBTAIN_SERIALIZER": "auth.serializers.APITokenObtainPairSerializer",
 }
 
