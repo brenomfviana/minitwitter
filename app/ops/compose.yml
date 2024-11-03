@@ -1,0 +1,11 @@
+services:
+  app:
+    container_name: container-react
+    build:
+      context: ../
+      dockerfile: ./ops/Dockerfile
+    command: npm run dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../minitwitter/:/app/
