@@ -20,3 +20,11 @@ logs:
     docker compose -f {{APP_COMPOSE}} logs --follow=true {{APP_SERVICE}}
 
 restart: down up logs
+
+# 
+
+fmt:
+    npx prettier ./minitwitter --write
+
+fmt-check:
+    npx prettier ./minitwitter --check
