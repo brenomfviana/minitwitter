@@ -1,7 +1,6 @@
+from common.test_utils.steps import given_a_user
 from django.core.management import BaseCommand
 from django.db.transaction import atomic
-
-from common.test_utils.steps import given_a_user
 
 
 class Command(BaseCommand):

@@ -1,5 +1,5 @@
 from django.contrib.auth.hashers import make_password
-from factory import LazyAttribute, Sequence, LazyFunction
+from factory import LazyAttribute, LazyFunction, Sequence
 from factory.django import DjangoModelFactory
 from factory.faker import Faker as FactoryFaker
 from faker import Faker
