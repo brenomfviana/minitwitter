@@ -54,6 +54,7 @@ LOCAL_APPS = [
     "common",
     "populate",
     "user",
+    "uauth",
     "post",
 ]
 
