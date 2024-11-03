@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import api from "../api";
 
-const FeedPage = () => {
+const FeedComponent = () => {
   const [feed, setFeed] = useState("");
 
   const navigate = useNavigate();
@@ -25,9 +25,9 @@ const FeedPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center max-w-[650px] overflow-hidden">
+    <div className="flex flex-col justify-center items-center max-w-[650px] overflow-hidden p-5">
       <h1 className="text-[#E2F1E7]">Feed</h1>
-      <div className="flex m-5 p-2 flex-col gap-4 overflow-y-auto">
+      <div className="flex p-5 flex-col gap-4 overflow-y-auto">
         {feed.results?.length === 0 && <p>No posts found</p>}
         {feed.results?.map((item, index) => (
           <PostCard key={item.id} post={item} />
@@ -37,4 +37,4 @@ const FeedPage = () => {
   );
 };
 
-export default FeedPage;
+export default FeedComponent;

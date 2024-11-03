@@ -1,12 +1,13 @@
 import BaseLayout from "./layouts/BaseLayout";
 import FeedComponent from "./components/FeedComponent";
+import ProfileComponent from "./components/ProfileComponent";
 
 function App() {
   return (
     <>
       <BaseLayout>
-        <div className="flex flex-col w-full justify-center items-center gap-2">
-          <h1>Mini Twitter</h1>
+        <div className="flex flex-row w-full justify-center">
+          <ProfileComponent className="items-start" />
           <FeedComponent />
         </div>
       </BaseLayout>
