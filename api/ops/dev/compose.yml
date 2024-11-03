@@ -4,10 +4,10 @@ volumes:
 x-app: &api_base
   image: api:latest
   build:
-    context: ../../../
-    dockerfile: ./ops/dev/api/Dockerfile
+    context: ../../
+    dockerfile: ./ops/dev/Dockerfile
   volumes:
-    - ../../../api/minitwitter/:/api/
+    - ../../minitwitter/:/api/
   depends_on:
     - psql
     - redis

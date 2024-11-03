@@ -1,7 +1,7 @@
 #
 
-API_CONTAINER := './ops/dev/api/Dockerfile'
-API_COMPOSE := './ops/dev/api/compose.yml'
+API_CONTAINER := './ops/dev/Dockerfile'
+API_COMPOSE := './ops/dev/compose.yml'
 
 API_SERVICE := 'api'
 
@@ -9,8 +9,8 @@ API_SERVICE := 'api'
 # Set Up
 
 config-env:
-	cp .env.example ./ops/dev/api/.env
-	cp .env.example ./api/minitwitter/.env
+	cp .env.example ./ops/dev/.env
+	cp .env.example ./minitwitter/.env
 
 build:
     docker build --file {{API_CONTAINER}} --tag api:latest .
@@ -45,8 +45,8 @@ test-path TEST:
     docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python manage.py test --noinput {{TEST}}
 
 fmt:
-    black api/
-    ruff check api/ --fix
+    black .
+    ruff check . --fix
 
 #
 
