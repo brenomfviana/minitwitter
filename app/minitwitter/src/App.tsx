@@ -1,11 +1,15 @@
-import LoginPage from "./pages/LoginPage";
+import BaseLayout from "./layouts/BaseLayout";
+import FeedComponent from "./components/FeedComponent";
 
 function App() {
   return (
     <>
-      <div className="flex h-screen justify-center items-center bg-[#243642]">
-        <LoginPage />
-      </div>
+      <BaseLayout>
+        <div className="flex flex-col w-full justify-center items-center gap-2">
+          <h1>Mini Twitter</h1>
+          <FeedComponent />
+        </div>
+      </BaseLayout>
     </>
   );
 }
