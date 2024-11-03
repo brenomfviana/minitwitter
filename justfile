@@ -32,9 +32,6 @@ restart: down up
 logs:
     docker compose -f {{API_COMPOSE}} logs --follow=true {{API_SERVICE}} psql celery
 
-remove-volumes:
-	docker compose -f {{API_COMPOSE}} down -v
-
 shell:
 	docker compose -f {{API_COMPOSE}} exec {{API_SERVICE}} python manage.py shell
 
@@ -50,3 +47,19 @@ test-path TEST:
 fmt:
     black api/
     ruff check api/ --fix
+
+#
+
+remove-volumes:
+	docker compose -f {{API_COMPOSE}} down -v
+
+migrate:
+    docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python manage.py migrate
+
+populate-users:
+    docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python manage.py populate_1_users
+
+populate-posts:
+    docker compose -f {{API_COMPOSE}} run --remove-orphans --rm {{API_SERVICE}} python manage.py populate_2_posts
+
+populate: remove-volumes migrate populate-users populate-posts restart

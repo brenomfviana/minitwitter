@@ -1,5 +1,5 @@
 from django.contrib.auth.hashers import make_password
-from factory import LazyAttribute, Sequence
+from factory import LazyAttribute, Sequence, LazyFunction
 from factory.django import DjangoModelFactory
 from factory.faker import Faker as FactoryFaker
 from faker import Faker
@@ -28,7 +28,7 @@ class UserFactory(BaseModelFactory):
         function=lambda n: f"{Faker().user_name()}{n}",
     )
     email = LazyAttribute(
-        function=lambda x: f"{x.username}@example.net",
+        function=lambda x: f"{x.username}@email.com",
     )
     password = make_password(password=DEFAULT_PASSWORD)
     is_staff = False
@@ -39,4 +39,4 @@ class PostFactory(BaseModelFactory):
     class Meta:
         model = Post
 
-    text = "post content"
+    text = LazyFunction(lambda: Faker().text(max_nb_chars=128))
