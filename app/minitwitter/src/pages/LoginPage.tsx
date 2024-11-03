@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useState, cache } from "react";
+import { useNavigate } from "react-router-dom";
 import BaseLayout from "../layouts/BaseLayout";
 import TextInput from "../components/TextInput";
 import PasswordInput from "../components/PasswordInput";
-import axios from "axios";
+import api from "../api";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -23,11 +23,11 @@ const LoginPage = () => {
       username: username,
       password: password,
     };
-    axios
-      .post("http://localhost:8000/api/auth/login/", payload)
+    api
+      .post("/auth/login/", payload)
       .then((response) => {
-        localStorage.setItem("auth", response.data);
-        navigate('/');
+        localStorage.setItem("auth", JSON.stringify(response.data));
+        navigate("/");
       })
       .catch((error) => {
         console.error(error);
