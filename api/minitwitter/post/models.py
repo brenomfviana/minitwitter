@@ -40,6 +40,14 @@ class Post(BaseModel):
     def __str__(self):
         return f"Post ({self.id})"
 
+    @property
+    def user_username(self):
+        return self.user.username
+
+    @property
+    def user_name(self):
+        return self.user.name
+
     @cached_property
     def like_count(self):
         return Like.objects.filter(post=self).count()

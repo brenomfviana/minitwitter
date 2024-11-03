@@ -30,6 +30,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "name",
             "followers_count",
             "following_count",
+            "posts_count",
         ]
         extra_kwargs = {
             "id": {"read_only": True},
@@ -38,4 +39,5 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "name": {"read_only": True},
             "followers_count": {"read_only": True},
             "following_count": {"read_only": True},
+            "posts_count": {"read_only": True},
         }

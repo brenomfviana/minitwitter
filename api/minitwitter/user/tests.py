@@ -98,6 +98,7 @@ class UserTestCase(APITestCase):
                 "name": user2.name,
                 "followers_count": user2.followers_count,
                 "following_count": user2.following_count,
+                "posts_count": user2.posts_count,
             },
             response.data,
         )

@@ -59,6 +59,12 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     def following_count(self):
         return Follower.objects.filter(follower=self).count()
 
+    @cached_property
+    def posts_count(self):
+        from post.models import Post
+
+        return Post.objects.filter(user=self).count()
+
 
 class Follower(BaseModel):
     following = models.ForeignKey(
